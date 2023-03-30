@@ -3,7 +3,7 @@ on:
   push:
     paths-ignore:
       - 'README.md'
-      - '.github/**'
+      #- '.github/**'
       - 'LICENSE'
       - 'rules/**'
     branches: [ main ]
@@ -24,13 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
-        with:
-          check-latest: true
-
-
       - name: Green
-        run: echo 1 > $RANDOM
+        run: find . -maxdepth 1 ! -name 'README.md' -type f -exec rm -f {} + && echo 1 > $RANDOM
         
       - name: Commit Changes
         id: commit
