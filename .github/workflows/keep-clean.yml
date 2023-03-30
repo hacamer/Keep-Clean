@@ -1,0 +1,54 @@
+name: Keep Green
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - '.github/**'
+      - 'LICENSE'
+      - 'rules/**'
+    branches: [ main ]
+  schedule:
+    - cron: 0 */8 * * *
+  workflow_dispatch:
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  Keep_Green:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v2
+        with:
+          check-latest: true
+
+
+      - name: Green
+        run: echo 1 > $RANDOM
+        
+      - name: Commit Changes
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 🚀 Keep Clean
+
+      - name: GitHub Push
+        if: steps.commit.outputs.changes_detected == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          branch: ${{github.ref}}
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 1
